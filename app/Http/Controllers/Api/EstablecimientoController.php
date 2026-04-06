@@ -27,7 +27,9 @@ class EstablecimientoController extends Controller
      */
     public function store(Request $request)
     {
+        $imagen = $request->file('imagen');
 
+        return $imagen;
         $establecimiento =  Establecimiento::create($request->all());
         $establecimiento->load('categoria');
         return response()->json([

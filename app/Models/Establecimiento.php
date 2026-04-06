@@ -36,7 +36,8 @@ class Establecimiento extends Model
         parent::boot();
 
         static::creating(function($establecimiento){
-            $establecimiento->user_id = auth('api')->user()->id;
+            // $establecimiento->user_id = auth('api')->user()->id;
+            $establecimiento->user_id = 1;
         });
 
     }
