@@ -5,8 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Establecimiento;
-use Symfony\Component\HttpKernel\HttpCache\Esi;
+use Illuminate\Support\Facades\Storage;
 
+use App\Http\Requests\EstablecimientoRequest;
 class EstablecimientoController extends Controller
 {
     /**
@@ -25,12 +26,16 @@ class EstablecimientoController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(EstablecimientoRequest $request)
     {
-        $imagen = $request->file('imagen');
+        $imagen = $request->file('imagen_file');
 
-        return $imagen;
+        $rutaImagen = $imagen->store('img-establecimeintos', 'public');
+
+        $request->merge(['imagen' => $rutaImagen]);
+
         $establecimiento =  Establecimiento::create($request->all());
+
         $establecimiento->load('categoria');
         return response()->json([
             'message' => 'Establecimiento creado exitosamente',
@@ -58,16 +63,32 @@ class EstablecimientoController extends Controller
      */
     public function update(Request $request, string $id)
     {
+
         //
         $establecimiento = Establecimiento::findOrFail($id);
-        if ($establecimiento->user_id != auth()->id()) {
-            return response()->json([
-                'message' => 'No tienes permiso para actualizar este establecimiento'
-            ], 403);
+        // if ($establecimiento->user_id != auth('api')->id()) {
+        //     return response()->json([
+        //         'message' => 'No tienes permiso para actualizar este establecimiento'
+        //     ], 403);
+        // }
+
+        if ($request->hasFile('imagen_file')) {
+
+            $imagenAnterior = $establecimiento->imagen;
+
+            $nuevaImagen=$request->file('imagen_file');
+
+            $rutaImagen = $nuevaImagen->store('img-establecimeintos', 'public');
+
+            $request->merge(['imagen' => $rutaImagen]);
         }
 
         $establecimiento->update($request->all());
         $establecimiento->load('categoria');
+
+        if(isset($imagenAnterior)){
+            Storage::disk('public')->delete($imagenAnterior);
+        }
 
 
 

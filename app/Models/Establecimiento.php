@@ -26,6 +26,23 @@ class Establecimiento extends Model
         'user_id'
     ];
 
+    protected $casts = [
+        'latitud' => 'float',
+        'longitud' => 'float',
+
+    ];
+
+    protected $appends = [
+        'url_imagen',
+    ];
+
+
+    protected function getUrlImagenAttribute()
+    {
+        return asset('storage/'.$this->imagen);
+    }
+
+
     public function categoria()
     {
         return $this->belongsTo(Categoria::class, 'categoria_id');
