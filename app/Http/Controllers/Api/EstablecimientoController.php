@@ -61,16 +61,16 @@ class EstablecimientoController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(EstablecimientoRequest $request, string $id)
     {
 
         //
         $establecimiento = Establecimiento::findOrFail($id);
-        // if ($establecimiento->user_id != auth('api')->id()) {
-        //     return response()->json([
-        //         'message' => 'No tienes permiso para actualizar este establecimiento'
-        //     ], 403);
-        // }
+        if ($establecimiento->user_id != auth('api')->id()) {
+            return response()->json([
+                'message' => 'No tienes permiso para actualizar este establecimiento'
+            ], 403);
+        }
 
         if ($request->hasFile('imagen_file')) {
 
@@ -105,7 +105,7 @@ class EstablecimientoController extends Controller
     {
         //
         $establecimiento = Establecimiento::findOrFail($id);
-        if ($establecimiento->user_id != auth()->id()) {
+        if ($establecimiento->user_id != auth('api')->id()) {
             return response()->json([
                 'message' => 'No tienes permiso para eliminar este establecimiento'
             ], 403);
