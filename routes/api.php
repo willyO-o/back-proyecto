@@ -2,21 +2,32 @@
 
 use App\Http\Controllers\Api\AuthController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\CategoriaController;
+use App\Http\Controllers\Api\EstablecimientoController;
+
 
 Route::prefix('auth')->group(function () {
 
     Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/register', [AuthController::class, 'registrar']);
 });
 
 
 Route::middleware('auth:api')->group(function () {
 
-    Route::resource('establecimientos', \App\Http\Controllers\Api\EstablecimientoController::class)->except(['create', 'edit']);
+    Route::resource('establecimientos', EstablecimientoController::class)->except(['create', 'edit']);
+
+    Route::resource('categorias', CategoriaController::class);
+});
+
+Route::prefix('public')->group(function () {
+    Route::get('/categorias', [CategoriaController::class, 'indexPublic']);
+    Route::get('/establecimientos', [EstablecimientoController::class , 'indexPublic']);
 });
 
 
 
 
-Route::resource('categorias', \App\Http\Controllers\Api\CategoriaController::class);
+
 
  # localhost:8000/api/auth/

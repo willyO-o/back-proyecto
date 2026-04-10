@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Models\User;
-
+use App\Http\Requests\RegistroRequest;
 class AuthController extends Controller
 {
     //
@@ -36,7 +36,7 @@ class AuthController extends Controller
             'user' => $user,
         ])
             ->cookie(
-                'refresh_token',
+                'refreshToken',
                 $refreshToken,
                 120, // expiracion de la cookie en minutos,
                 '/', // path
@@ -49,10 +49,14 @@ class AuthController extends Controller
     }
 
 
-    public function registrar(Request $request)
+    public function registrar(RegistroRequest $request)
     {
 
         $request->merge(['rol_id' => 3]);
+
+
+
+
         $usuario = User::create($request->all());
 
         if (!$usuario) {
@@ -76,11 +80,11 @@ class AuthController extends Controller
             'access_token' => $token,
             'user' => $usuario,
         ])->cookie(
-            'refresh_token',
+            'refreshToken',
             $refreshToken,
             120, // expiracion de la cookie en minutos,
             '/', // path
-            null,
+            'localhost', // dominio
             false, // secure (cambiar en produccion a true)
             true, // httpOnly
             false,

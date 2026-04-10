@@ -117,4 +117,19 @@ class EstablecimientoController extends Controller
             'message' => 'Establecimiento eliminado exitosamente'
         ]);
     }
+
+
+
+    public function indexPublic(Request $request)
+    {
+
+        $establecimientos =  Establecimiento::with('categoria')
+        ->when($request->categoria_id, function($query) use ($request){
+            $query->where('categoria_id', $request->categoria_id);
+        })
+        ->paginate(9);
+
+        return  response()->json($establecimientos);
+
+    }
 }

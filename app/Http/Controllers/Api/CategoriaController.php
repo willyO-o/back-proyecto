@@ -16,7 +16,7 @@ class CategoriaController extends Controller
         $categorias = Categoria::all();
         //
         return response()->json([
-            'data'=>$categorias
+            'data' => $categorias
         ]);
     }
 
@@ -66,5 +66,16 @@ class CategoriaController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+
+
+    public function indexPublic(Request $request)
+    {
+        $categorias = Categoria::all();
+
+        return response()->json([
+            'data' => $categorias
+        ]);
     }
 }
