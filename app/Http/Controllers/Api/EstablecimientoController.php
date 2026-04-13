@@ -8,6 +8,7 @@ use App\Models\Establecimiento;
 use Illuminate\Support\Facades\Storage;
 
 use App\Http\Requests\EstablecimientoRequest;
+
 class EstablecimientoController extends Controller
 {
     /**
@@ -76,7 +77,7 @@ class EstablecimientoController extends Controller
 
             $imagenAnterior = $establecimiento->imagen;
 
-            $nuevaImagen=$request->file('imagen_file');
+            $nuevaImagen = $request->file('imagen_file');
 
             $rutaImagen = $nuevaImagen->store('img-establecimeintos', 'public');
 
@@ -86,7 +87,7 @@ class EstablecimientoController extends Controller
         $establecimiento->update($request->all());
         $establecimiento->load('categoria');
 
-        if(isset($imagenAnterior)){
+        if (isset($imagenAnterior)) {
             Storage::disk('public')->delete($imagenAnterior);
         }
 
@@ -124,12 +125,37 @@ class EstablecimientoController extends Controller
     {
 
         $establecimientos =  Establecimiento::with('categoria')
-        ->when($request->categoria_id, function($query) use ($request){
-            $query->where('categoria_id', $request->categoria_id);
-        })
-        ->paginate(9);
+            ->when($request->busqueda, function ($query) use ($request) {
+                $busqueda = $request->busqueda;
+                $busqueda = str_replace(' ', '%', $busqueda);
+
+                $query->where(function ($query) use ($busqueda) {
+                    $query->where('nombre', 'like', "%{$busqueda}%")
+                        ->orWhere('descripcion', 'like', "%{$busqueda}%")
+                        ->orWhere('direccion', 'like', "%{$busqueda}%");
+                });
+            })
+            ->when($request->categoria_id, function ($query) use ($request) {
+                $query->where('categoria_id', $request->categoria_id);
+            })
+            ->when($request->orden, function ($query) use ($request) {
+                switch ($request->orden) {
+                    case 'reciente':
+                        $query->orderBy('created_at', 'desc');
+                        break;
+                    case 'antiguo':
+                        $query->orderBy('created_at', 'asc');
+                        break;
+                    case 'az':
+                        $query->orderBy('nombre', 'asc');
+                        break;
+                    case 'za':
+                        $query->orderBy('nombre', 'desc');
+                        break;
+                }
+            })
+            ->paginate($request->input('porPagina', 6), ['*'], 'pagina', $request->input('pagina', 1));
 
         return  response()->json($establecimientos);
-
     }
 }
