@@ -36,10 +36,14 @@ class Establecimiento extends Model
         'url_imagen',
     ];
 
+    protected $hidden = [
+        'user_id'
+    ];
+
 
     protected function getUrlImagenAttribute()
     {
-        return asset('storage/'.$this->imagen);
+        return asset('storage/' . $this->imagen);
     }
 
 
@@ -48,14 +52,18 @@ class Establecimiento extends Model
         return $this->belongsTo(Categoria::class, 'categoria_id');
     }
 
+    public function servicios()
+    {
+        return $this->hasMany(Servicio::class, 'establecimiento_id')
+            ->orderBy('created_at', 'desc');
+    }
+
     static function boot()
     {
         parent::boot();
 
-        static::creating(function($establecimiento){
+        static::creating(function ($establecimiento) {
             $establecimiento->user_id = auth('api')->user()->id;
         });
-
     }
-
 }

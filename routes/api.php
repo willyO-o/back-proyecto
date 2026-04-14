@@ -23,6 +23,7 @@ Route::middleware('auth:api')->group(function () {
 Route::prefix('public')->group(function () {
     Route::get('/categorias', [CategoriaController::class, 'indexPublic']);
     Route::get('/establecimientos', [EstablecimientoController::class , 'indexPublic']);
+    Route::get('/establecimientos/{id}', [EstablecimientoController::class , 'indexPublicID']);
 });
 
 

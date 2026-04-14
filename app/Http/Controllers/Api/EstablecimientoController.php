@@ -158,4 +158,16 @@ class EstablecimientoController extends Controller
 
         return  response()->json($establecimientos);
     }
+
+
+    public function indexPublicID(string $id)
+    {
+        //
+        $establecimiento = Establecimiento::findOrFail($id);
+        $establecimiento->load('categoria','servicios');
+
+        return  response()->json([
+            'data' => $establecimiento
+        ]);
+    }
 }
