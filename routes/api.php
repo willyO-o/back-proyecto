@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\CategoriaController;
 use App\Http\Controllers\Api\EstablecimientoController;
+use App\Http\Controllers\Api\ServicioController;
 
 
 Route::prefix('auth')->group(function () {
@@ -18,6 +19,7 @@ Route::middleware('auth:api')->group(function () {
     Route::resource('establecimientos', EstablecimientoController::class)->except(['create', 'edit']);
 
     Route::resource('categorias', CategoriaController::class);
+    Route::resource('servicios', ServicioController::class)->except(['create', 'edit','index']);
 });
 
 Route::prefix('public')->group(function () {
