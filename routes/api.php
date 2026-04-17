@@ -12,7 +12,8 @@ Route::prefix('auth')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/register', [AuthController::class, 'registrar']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
-    Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:api');
+    Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api');
+    Route::post('/cambiar-contrasenia', [AuthController::class, 'cambiarContrasenia'])->middleware('auth:api');
 });
 
 
@@ -22,7 +23,11 @@ Route::middleware('auth:api')->group(function () {
 
     Route::resource('categorias', CategoriaController::class);
     Route::resource('servicios', ServicioController::class)->except(['create', 'edit','index']);
+
 });
+
+Route::post('/chatbot', [\App\Http\Controllers\Api\ChatbotController::class, 'index']);
+
 
 Route::prefix('public')->group(function () {
     Route::get('/categorias', [CategoriaController::class, 'indexPublic']);

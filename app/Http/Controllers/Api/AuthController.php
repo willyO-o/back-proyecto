@@ -8,6 +8,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Models\User;
 use App\Http\Requests\RegistroRequest;
 
+
 class AuthController extends Controller
 {
     //
@@ -133,5 +134,32 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Sesión cerrada exitosamente'
         ])->cookie('refreshToken', null, -1);
+    }
+
+    public function cambiarContrasenia(Request $request)
+    {
+        $request->validate([
+            'contrasenia_actual' => 'required',
+            'nueva_contrasenia' => 'required|string|min:6|confirmed:confirmar_nueva_contrasenia',
+            'confirmar_nueva_contrasenia' => 'required|string'
+        ]);
+
+        $user = auth('api')->user();
+
+        $contraseniaActual = $request->input('contrasenia_actual');
+
+        if (!password_verify($contraseniaActual, $user->password)) {
+            return response()->json([
+                'errors' => 'La contraseña actual no es correcta'
+            ], 422);
+        }
+
+        $user->password = bcrypt($request->input('nueva_contrasenia'));
+        $user->save();
+
+        return response()->json([
+            'message' => 'Contraseña actualizada exitosamente'
+        ]);
+
     }
 }
